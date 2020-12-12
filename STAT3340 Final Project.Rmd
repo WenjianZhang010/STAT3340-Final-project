@@ -1,0 +1,357 @@
+Data Description
+```{r}
+options(digits = 3, scipen = 50)
+library(car)
+library(caret)
+library(dplyr)
+```
+
+# The data is read using the read.csv() function.The first six pieces of data are then displayed using the head()v function.
+```{r}
+df <- read.csv("~/Downloads/Life Expectancy Data.csv", header=T)
+head(df)
+```
+
+# Add a new variable DEVELOPED.Use the str () function to display data structure information
+```{r}
+df$developed <- ifelse(df$Status == "Developing", 0, 1)
+str(df)
+```
+```{r}
+write.csv(df, file = "df.csv", row.names = F)
+```
+
+
+# We have Country, Year, Status, developed as factor variable,
+# When plotting and calculating the correlation coefficient, it is necessary to eliminate the value range of each variable among the remaining numerical variables is quite different,
+# The data needs to be standardized.
+```{r}
+df1 <- df[, -c(1, 2, 3, 23)]
+stand_scale <- preProcess(df1)
+df2 <- na.omit(predict(stand_scale, df1))
+head(df2)
+```
+
+# Using the cor () function to calculate the correlation coefficient matrix between the variables, the results are shown below.
+```{r}
+result.cor <- round(cor(df2), 2)
+result.cor
+```
+
+# According to the above correlation coefficient results, variables with correlation coefficient greater than 0.7 are screened to draw a scatter plot matrix
+```{r}
+result.cor1 <- result.cor
+result.cor1[result.cor1 < 0.7] <- "N"
+result.cor1[result.cor == 1] <- "N"
+result.cor1
+a <- c("GDP", "Income.composition.of.resources", "Schooling",  "Life.expectancy", "percentage.expenditure", 
+       "thinness..1.19.years", "thinness.5.9.years")
+df3 <- df1[, a]
+scatterplotMatrix(df3, spread = FALSE, smoother.args = list(lty = 2), 
+                  main = "Scatter Plot Matrix")
+```
+Method
+```{r}
+Life.Expectancy.Data <- read.csv("~/Downloads/Life Expectancy Data.csv", header=T)
+```
+Using Backward model selection method
+life expectancy is y, other 18 indictors are variables
+```{r}
+lm(Life.expectancy~ 
+Adult.Mortality+
+infant.deaths+
+Alcohol+
+percentage.expenditure+
+Hepatitis.B+
+Measles+
+ BMI +
+under.five.deaths +
+Polio+
+Total.expenditure+
+Diphtheria+ 
+ HIV.AIDS+
+GDP+
+Population+
+ thinness..1.19.years+
+ thinness.5.9.years+
+Income.composition.of.resources+
+Schooling, data=Life.Expectancy.Data)
+```
+Lets define the alpha out equal to 0.05
+summary will show the p-value for each variable.
+```{r}
+summary(lm(Life.expectancy~ 
+Adult.Mortality+
+infant.deaths+
+Alcohol+
+percentage.expenditure+
+Hepatitis.B+
+Measles+
+ BMI +
+under.five.deaths +
+Polio+
+Total.expenditure+
+Diphtheria+ 
+ HIV.AIDS+
+GDP+
+Population+
+ thinness..1.19.years+
+ thinness.5.9.years+
+Income.composition.of.resources+
+Schooling, data=Life.Expectancy.Data))
+```
+In table we can see the thinness..1.19.years with the largest p-vlaue and larger than alpha out, so we delete it.
+```{r}
+lm(Life.expectancy~ 
+Adult.Mortality+
+infant.deaths+
+Alcohol+
+percentage.expenditure+
+Hepatitis.B+
+Measles+
+ BMI +
+under.five.deaths +
+Polio+
+Total.expenditure+
+Diphtheria+ 
+ HIV.AIDS+
+GDP+
+Population+
+thinness.5.9.years+
+Income.composition.of.resources+
+Schooling, data=Life.Expectancy.Data)
+```
+
+```{r}
+summary(lm(Life.expectancy~ 
+Adult.Mortality+
+infant.deaths+
+Alcohol+
+percentage.expenditure+
+Hepatitis.B+
+Measles+
+ BMI +
+under.five.deaths +
+Polio+
+Total.expenditure+
+Diphtheria+ 
+ HIV.AIDS+
+GDP+
+Population+
+thinness.5.9.years+
+Income.composition.of.resources+
+Schooling, data=Life.Expectancy.Data))
+```
+In the table In table we can see the population with the largest p-vlaue and larger than alpha out, so we delete it.
+```{r}
+lm(Life.expectancy~ 
+Adult.Mortality+
+infant.deaths+
+Alcohol+
+percentage.expenditure+
+Hepatitis.B+
+Measles+
+ BMI +
+under.five.deaths +
+Polio+
+Total.expenditure+
+Diphtheria+ 
+ HIV.AIDS+
+GDP+
+thinness.5.9.years+
+Income.composition.of.resources+
+Schooling, data=Life.Expectancy.Data)
+```
+
+```{r}
+summary(lm(Life.expectancy~ 
+Adult.Mortality+
+infant.deaths+
+Alcohol+
+percentage.expenditure+
+Hepatitis.B+
+Measles+
+ BMI +
+under.five.deaths +
+Polio+
+Total.expenditure+
+Diphtheria+ 
+ HIV.AIDS+
+GDP+
+thinness.5.9.years+
+Income.composition.of.resources+
+Schooling, data=Life.Expectancy.Data))
+```
+In table we can see the Hepatitis.B with the largest p-vlaue and larger than alpha out, so we delete it.
+```{r}
+lm(Life.expectancy~ 
+Adult.Mortality+
+infant.deaths+
+Alcohol+
+percentage.expenditure+
+Measles+
+ BMI +
+under.five.deaths +
+Polio+
+Total.expenditure+
+Diphtheria+ 
+ HIV.AIDS+
+GDP+
+thinness.5.9.years+
+Income.composition.of.resources+
+Schooling, data=Life.Expectancy.Data)
+```
+
+```{r}
+summary(lm(Life.expectancy~ 
+Adult.Mortality+
+infant.deaths+
+Alcohol+
+percentage.expenditure+
+Measles+
+BMI +
+under.five.deaths +
+Polio+
+Total.expenditure+
+Diphtheria+ 
+ HIV.AIDS+
+GDP+
+thinness.5.9.years+
+Income.composition.of.resources+
+Schooling, data=Life.Expectancy.Data))
+```
+In table we can see the Alcohol with the largest p-vlaue and larger than alpha out, so we delete it.
+```{r}
+lm(Life.expectancy~ 
+Adult.Mortality+
+infant.deaths+
+percentage.expenditure+
+Measles+
+ BMI +
+under.five.deaths +
+Polio+
+Total.expenditure+
+Diphtheria+ 
+ HIV.AIDS+
+GDP+
+thinness.5.9.years+
+Income.composition.of.resources+
+Schooling, data=Life.Expectancy.Data)
+```
+
+```{r}
+summary(lm(Life.expectancy~ 
+Adult.Mortality+
+infant.deaths+
+percentage.expenditure+
+Measles+
+ BMI +
+under.five.deaths +
+Polio+
+Total.expenditure+
+Diphtheria+ 
+ HIV.AIDS+
+GDP+
+thinness.5.9.years+
+Income.composition.of.resources+
+Schooling, data=Life.Expectancy.Data))
+```
+In table we can see the Total.expenditure with the largest p-vlaue and larger than alpha out, so we delete it.
+```{r}
+lm(Life.expectancy~ 
+Adult.Mortality+
+infant.deaths+
+percentage.expenditure+
+Measles+
+ BMI +
+under.five.deaths +
+Polio+
+Diphtheria+ 
+ HIV.AIDS+
+GDP+
+thinness.5.9.years+
+Income.composition.of.resources+
+Schooling, data=Life.Expectancy.Data)
+```
+
+```{r}
+summary(lm(Life.expectancy~ 
+Adult.Mortality+
+infant.deaths+
+percentage.expenditure+
+Measles+
+ BMI +
+under.five.deaths +
+Polio+
+Diphtheria+ 
+ HIV.AIDS+
+GDP+
+thinness.5.9.years+
+Income.composition.of.resources+
+Schooling, data=Life.Expectancy.Data))
+```
+In table we can see the Measles with the largest p-vlaue and larger than alpha out, so we delete it.
+```{r}
+lm(Life.expectancy~ 
+Adult.Mortality+
+infant.deaths+
+percentage.expenditure+
+ BMI +
+under.five.deaths +
+Polio+
+Diphtheria+ 
+ HIV.AIDS+
+GDP+
+thinness.5.9.years+
+Income.composition.of.resources+
+Schooling, data=Life.Expectancy.Data)
+```
+
+```{r}
+summary(lm(Life.expectancy~ 
+Adult.Mortality+
+infant.deaths+
+percentage.expenditure+
+ BMI +
+under.five.deaths +
+Polio+
+Diphtheria+ 
+ HIV.AIDS+
+GDP+
+thinness.5.9.years+
+Income.composition.of.resources+
+Schooling, data=Life.Expectancy.Data))
+```
+In this table we can see every variables are less than alpha out vlaue and all of them are significant variables. Therefore we can get the final model y=52.4025809-0.0166069x1+0.0873726x2+0.0001801x4+0.0327984x7-0.0650677x8+ 0.0213506x9+0.0256096x11-0.4740475x12+0.0000314x13-0.0922148x16+7.4856404x17+0.8945372x18+e
+```{r}
+AIC(lm(Life.expectancy~ 
+Adult.Mortality+
+infant.deaths+
+percentage.expenditure+
+ BMI +
+under.five.deaths +
+Polio+
+Diphtheria+ 
+ HIV.AIDS+
+GDP+
+thinness.5.9.years+
+Income.composition.of.resources+
+Schooling, data=Life.Expectancy.Data))
+```
+The AIC for this model is 13588.39
+```{r}
+plot(lm(Life.expectancy~ 
+Adult.Mortality+
+infant.deaths+
+percentage.expenditure+
+ BMI +
+under.five.deaths +
+Polio+
+Diphtheria+ 
+ HIV.AIDS+
+GDP+
+thinness.5.9.years+
+Income.composition.of.resources+
+Schooling, data=Life.Expectancy.Data))
+```
+In Residual vs Fittied every circles show the every single error，the vast majority of errors distribute around E(ei)=0, in Normall Q-Q plot we can see this final model is in accordance with normal distribution,  Scale-Location shows every variance of residual almost equal, and Residuals vs Leverage shows no abnormal points in the final model
